@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Crafteo y Compra de Materiales</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+        body {
+            font-family: 'Orbitron', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: url('https://static.wikia.nocookie.net/reddeadredemption/images/3/3f/Red_Dead_Redemption_2_20190513122607.jpg/revision/latest/scale-to-width-down/1000?cb=20190513170956') no-repeat center center fixed;
+            background-size: cover;
+            color: #ff0000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background: rgba(30, 30, 30, 0.9);
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid #ff0000;
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.6);
+            max-width: 400px;
+            width: 100%;
+            position: relative;
+            animation: glow 3s infinite alternate;
+            overflow: hidden;
+        }
+        .container img {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        @keyframes glow {
+            0% {
+                box-shadow: 0 0 15px rgba(255, 0, 0, 0.6), 0 0 30px rgba(255, 0, 0, 0.4);
+            }
+            100% {
+                box-shadow: 0 0 25px rgba(255, 0, 0, 0.9), 0 0 50px rgba(255, 0, 0, 0.6);
+            }
+        }
+        h1 {
+            text-align: center;
+            color: #ff0000;
+            text-shadow: 0 0 8px rgba(255, 0, 0, 0.8);
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            color: #ff0000;
+            text-shadow: 0 0 3px rgba(255, 0, 0, 0.8);
+        }
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0 15px;
+            border: none;
+            border-radius: 6px;
+            background: #1c1c1c;
+            color: #ff0000;
+            box-shadow: inset 0 0 5px rgba(255, 0, 0, 0.5), 0 0 8px rgba(255, 0, 0, 0.6);
+            font-family: 'Orbitron', sans-serif;
+            transition: 0.3s;
+        }
+        input:focus, select:focus, button:focus {
+            outline: none;
+            box-shadow: 0 0 12px rgba(255, 0, 0, 0.9);
+        }
+        button {
+            cursor: pointer;
+            background: linear-gradient(135deg, #ff4b4b, #ff0000);
+        }
+        button:hover {
+            background: linear-gradient(135deg, #ff1a1a, #e60000);
+        }
+        .results {
+            margin-top: 20px;
+            background: rgba(18, 18, 18, 0.8);
+            padding: 15px;
+            border-radius: 6px;
+            border: 2px solid #ff0000;
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+        }
+        .price {
+            color: #ff00ff;
+            font-weight: bold;
+            text-shadow: 0 0 6px rgba(255, 0, 255, 0.8);
+        }
+        .item-name {
+            color: #ff0000;
+            font-weight: bold;
+            text-shadow: 0 0 4px rgba(255, 0, 0, 0.8);
+        }
+        .quantity {
+            color: #ffb400;
+            font-weight: bold;
+            text-shadow: 0 0 4px rgba(255, 180, 0, 0.8);
+        }
+        .ingredient {
+            color: #00ff00;
+            text-shadow: 0 0 4px rgba(0, 255, 0, 0.7);
+        }
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        .tab {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            background: #1c1c1c;
+            color: #ff0000;
+            border: 2px solid #ff0000;
+            transition: background 0.3s, color 0.3s;
+        }
+        .tab.active {
+            background: #ff0000;
+            color: #1c1c1c;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .bottom-image {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .bottom-image img {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="https://i.postimg.cc/TwfvmHLP/CABECERA-WEST-TALES-FORO-2.png" alt="Cabecera">
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('crafting')">Crafteo</div>
+            <div class="tab" onclick="switchTab('materials')">Compra de Materiales</div>
+        </div>
+        <div id="crafting" class="tab-content active">
+            <h1>Calculadora de Crafteo</h1>
+            <form id="craftingForm">
+                <label for="receta">Selecciona la receta:</label>
+                <select id="receta" onchange="mostrarPrecio()">
+                    <!-- Lista completa de recetas -->
+                    <option value="Polvora">Pólvora</option>
+                    <option value="Lazo reforzado">Lazo reforzado</option>
+                    <option value="Paquete de flechas">Paquete de flechas</option>
+                    <option value="Cuchillo">Cuchillo</option>
+                    <option value="Arco Mejorado">Arco Mejorado</option>
+                    <option value="Aceite para armas">Aceite para armas</option>
+                    <option value="Caja de munición de fusil">Caja de munición de fusil</option>
+                    <option value="Caja de cartuchos de escopeta">Caja de cartuchos de escopeta</option>
+                    <option value="Caja de munición de repetición">Caja de munición de repetición</option>
+                    <option value="Caja de munición de revolver">Caja de munición de revolver</option>
+                    <option value="Revólver Cattleman">Revólver Cattleman</option>
+                    <option value="Revólver de doble acción">Revólver de doble acción</option>
+                    <option value="Revólver Schofield">Revólver Schofield</option>
+                    <option value="Lancaster">Lancaster</option>
+                    <option value="Varmint">Varmint</option>
+                    <option value="Escopeta doble cañón">Escopeta doble cañón</option>
+                    <option value="Escopeta de corredera">Escopeta de corredera</option>
+                    <option value="Rifle de cerrojo">Rifle de cerrojo</option>
+                    <option value="Tomahawk">Tomahawk</option>
+                </select>
+                <label for="cantidad">Cantidad a craftear:</label>
+                <input type="number" id="cantidad" min="1" value="1">
+                <button type="button" onclick="calcular()">Calcular</button>
+            </form>
+            <div id="result" class="results"></div>
+            <div id="precio" class="results" style="display: none;"></div>
+        </div>
+        <div id="materials" class="tab-content">
+            <h1>Compra de Materiales</h1>
+            <form id="materialsForm">
+                <label for="material">Selecciona el material:</label>
+                <select id="material">
+                    <!-- Lista de materiales -->
+                    <option value="Salitre">Salitre</option>
+                    <option value="Carbón">Carbón</option>
+                    <option value="Azufre">Azufre</option>
+                    <option value="Resina">Resina</option>
+                    <option value="Sisal">Sisal</option>
+                    <option value="Madera blanda">Madera blanda</option>
+                    <option value="Pluma">Pluma</option>
+                    <option value="Plancha de acero">Plancha de acero</option>
+                    <option value="Martillo">Martillo</option>
+                    <option value="Tenazas">Tenazas</option>
+                    <option value="Lima">Lima</option>
+                    <option value="Vara de madera dura">Vara de madera dura</option>
+                    <option value="Grasa">Grasa</option>
+                    <option value="Filtro">Filtro</option>
+                    <option value="Lingote de hierro">Lingote de hierro</option>
+                    <option value="Pólvora">Pólvora</option>
+                    <option value="Destornillador">Destornillador</option>
+                    <option value="Cañón de revólver">Cañón de revólver</option>
+                    <option value="Percutor">Percutor</option>
+                    <option value="Resorte">Resorte</option>
+                    <option value="Armazón de revólver Cattleman">Armazón de revólver Cattleman</option>
+                    <option value="Clavo">Clavo</option>
+                    <option value="Empuñadura de revólver">Empuñadura de revólver</option>
+                    <option value="Tornillo">Tornillo</option>
+                    <!-- Agregar más materiales según sea necesario -->
+                </select>
+                <label for="materialCantidad">Cantidad a comprar:</label>
+                <input type="number" id="materialCantidad" min="1" value="1">
+                <button type="button" onclick="agregarAlCarrito()">Agregar al Carrito</button>
+            </form>
+            <div id="carrito" class="results"></div>
+            <div id="total" class="results" style="display: none;"></div>
+        </div>
+        <!-- Imagen inferior centrada -->
+        <div class="bottom-image">
+            <img src="https://i.imgur.com/s23nWuR.png" alt="Imagen Inferior">
+        </div>
+    </div>
+
+    <script>
+        const recetas = {
+            "Polvora": { cantidadBase: 10, nivel: 0, exp: 30, tiempo: 90, precio: 1, ingredientes: { "Salitre": 4, "Carbón": 1, "Azufre": 2 } },
+            "Lazo reforzado": { cantidadBase: 1, nivel: 0, exp: 30, tiempo: 90, precio: 1, ingredientes: { "Resina": 2, "Sisal": 3 } },
+            "Paquete de flechas": { cantidadBase: 1, nivel: 0, exp: 40, tiempo: 95, precio: 1, ingredientes: { "Madera blanda": 5, "Pluma": 5 } },
+            "Cuchillo": { cantidadBase: 1, nivel: 0, exp: 50, tiempo: 90, precio: 1, ingredientes: { "Plancha de acero": 1, "Martillo": 1, "Tenazas": 1, "Lima": 1 } },
+            "Arco Mejorado": { cantidadBase: 1, nivel: 0, exp: 50, tiempo: 95, precio: 1, ingredientes: { "Vara de madera dura": 1, "Resina": 2 } },
+            "Aceite para armas": { cantidadBase: 1, nivel: 1, exp: 30, tiempo: 95, precio: 1, ingredientes: { "Grasa": 2, "Filtro": 1 } },
+            "Caja de munición de fusil": { cantidadBase: 1, nivel: 1, exp: 50, tiempo: 95, precio: 1, ingredientes: { "Lingote de hierro": 1, "Pólvora": 5, "Destornillador": 1, "Martillo": 1 } },
+            "Caja de cartuchos de escopeta": { cantidadBase: 1, nivel: 1, exp: 50, tiempo: 95, precio: 1, ingredientes: { "Lingote de hierro": 1, "Pólvora": 5, "Destornillador": 1, "Martillo": 1 } },
+            "Caja de munición de repetición": { cantidadBase: 1, nivel: 1, exp: 50, tiempo: 95, precio: 1, ingredientes: { "Lingote de hierro": 2, "Pólvora": 5, "Destornillador": 1, "Martillo": 1 } },
+            "Caja de munición de revolver": { cantidadBase: 1, nivel: 1, exp: 50, tiempo: 95, precio: 1, ingredientes: { "Lingote de hierro": 2, "Pólvora": 5, "Destornillador": 1, "Martillo": 1 } },
+            "Revólver Cattleman": { cantidadBase: 1, nivel: 1, exp: 70, tiempo: 95, precio: 1, ingredientes: { "Cañón de revólver": 1, "Percutor": 1, "Resorte": 1, "Armazón de revólver Cattleman": 1, "Clavo": 2, "Empuñadura de revólver": 1, "Destornillador": 1, "Martillo": 1 } },
+            "Revólver de doble acción": { cantidadBase: 1, nivel: 1, exp: 70, tiempo: 95, precio: 1, ingredientes: { "Cañón de revólver": 1, "Percutor": 1, "Resorte": 2, "Armazón de revólver de doble acción": 1, "Empuñadura de revólver": 1, "Destornillador": 1, "Martillo": 1 } },
+            "Revólver Schofield": { cantidadBase: 1, nivel: 1, exp: 70, tiempo: 95, precio: 1, ingredientes: { "Cañón de revólver": 1, "Percutor": 1, "Resorte": 1, "Tornillo": 1, "Armazón de revólver Schofield": 1, "Empuñadura de revólver": 1, "Destornillador": 1, "Martillo": 1 } },
+            "Lancaster": { cantidadBase: 1, nivel: 2, exp: 80, tiempo: 95, precio: 1, ingredientes: { "Cañón de carabina": 1, "Percutor": 1, "Resorte": 1, "Armazón de Lancaster": 1, "Culata de carabina": 1, "Tornillo": 1, "Destornillador": 1, "Martillo": 1, "Lima": 1 } },
+            "Varmint": { cantidadBase: 1, nivel: 2, exp: 80, tiempo: 95, precio: 1, ingredientes: { "Cañón de carabina": 1, "Percutor": 1, "Resorte": 1, "Armazón de Varmint": 1, "Culata de carabina": 1, "Destornillador": 1, "Martillo": 1 } },
+            "Escopeta doble cañón": { cantidadBase: 1, nivel: 3, exp: 90, tiempo: 95, precio: 1, ingredientes: { "Cañón de escopeta": 1, "Percutor": 1, "Resorte": 1, "Armazón de escopeta": 1, "Culata de escopeta": 1, "Destornillador": 1, "Martillo": 1 } },
+            "Escopeta de corredera": { cantidadBase: 1, nivel: 3, exp: 90, tiempo: 95, precio: 1, ingredientes: { "Cañón de escopeta": 1, "Percutor": 1, "Resorte": 1, "Armazón de escopeta corredera": 1, "Culata de escopeta": 1, "Destornillador": 1, "Martillo": 1, "Lima": 1 } },
+            "Rifle de cerrojo": { cantidadBase: 1, nivel: 4, exp: 100, tiempo: 95, precio: 1, ingredientes: { "Cañón de fusil": 1, "Percutor": 1, "Resorte": 1, "Armazón de fusil de cerrojo": 1, "Culata de fusil de cerrojo": 1, "Tornillo": 1, "Destornillador": 1, "Martillo": 1, "Lima": 1 } },
+            "Tomahawk": { cantidadBase: 1, nivel: 0, exp: 0, tiempo: 0, precio: 1, ingredientes: { "Plancha de acero": 1, "Martillo": 1, "Tenazas": 1, "Lima": 1 } }
+        };
+
+        const preciosMateriales = {
+            "Salitre": 1,
+            "Carbón": 1,
+            "Azufre": 1,
+            "Resina": 1,
+            "Sisal": 1,
+            "Madera blanda": 1,
+            "Pluma": 1,
+            "Plancha de acero": 1,
+            "Martillo": 1,
+            "Tenazas": 1,
+            "Lima": 1,
+            "Vara de madera dura": 1,
+            "Grasa": 1,
+            "Filtro": 1,
+            "Lingote de hierro": 1,
+            "Pólvora": 1,
+            "Destornillador": 1,
+            "Cañón de revólver": 1,
+            "Percutor": 1,
+            "Resorte": 1,
+            "Armazón de revólver Cattleman": 1,
+            "Clavo": 1,
+            "Empuñadura de revólver": 1,
+            "Tornillo": 1
+        };
+
+        let totalCompra = 0;
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            document.querySelector(`.tab[onclick="switchTab('${tabId}')"]`).classList.add('active');
+        }
+
+        function mostrarPrecio() {
+            const recetaSeleccionada = document.getElementById('receta').value;
+            if (recetas[recetaSeleccionada]) {
+                const precio = recetas[recetaSeleccionada].precio;
+                document.getElementById('precio').style.display = 'block';
+                document.getElementById('precio').innerHTML = `<p>Precio máximo de venta: <span class="price">$${precio}</span></p>`;
+            } else {
+                document.getElementById('precio').style.display = 'none';
+            }
+        }
+
+        function calcular() {
+            const recetaSeleccionada = document.getElementById('receta').value;
+            const cantidad = parseInt(document.getElementById('cantidad').value);
+
+            if (recetas[recetaSeleccionada]) {
+                const receta = recetas[recetaSeleccionada];
+                const ingredientesNecesarios = {};
+                for (const [ingrediente, cantidadBase] of Object.entries(receta.ingredientes)) {
+                    ingredientesNecesarios[ingrediente] = cantidadBase * (cantidad / receta.cantidadBase);
+                }
+
+                const resultado = `
+                    <h3>Resultado para <span class="item-name">${cantidad} de ${recetaSeleccionada}</span></h3>
+                    <p><strong>Nivel:</strong> <span class="quantity">${receta.nivel}</span></p>
+                    <p><strong>Experiencia:</strong> <span class="quantity">${receta.exp}</span></p>
+                    <p><strong>Tiempo:</strong> <span class="quantity">${receta.tiempo} minutos</span></p>
+                    <h4>Ingredientes necesarios:</h4>
+                    <ul>
+                        ${Object.entries(ingredientesNecesarios).map(([ing, cant]) => `<li><span class="ingredient">${ing}:</span> <span class="quantity">${cant}</span></li>`).join('')}
+                    </ul>
+                `;
+
+                document.getElementById('result').innerHTML = resultado;
+            } else {
+                document.getElementById('result').innerHTML = "<p>Receta no encontrada</p>";
+            }
+        }
+
+        function agregarAlCarrito() {
+            const material = document.getElementById('material').value;
+            const cantidad = parseInt(document.getElementById('materialCantidad').value);
+            const precioUnitario = preciosMateriales[material] || 0;
+            const total = precioUnitario * cantidad;
+            totalCompra += total;
+
+            const carrito = document.getElementById('carrito');
+            carrito.innerHTML += `<p>${cantidad} x <span class="item-name">${material}</span> a $${precioUnitario} cada uno: <span class="quantity">$${total}</span></p>`;
+
+            const totalElement = document.getElementById('total');
+            totalElement.style.display = 'block';
+            totalElement.innerHTML = `<p>Total a pagar: <span class="price">$${totalCompra}</span></p>`;
+        }
+    </script>
+</body>
+</html>
